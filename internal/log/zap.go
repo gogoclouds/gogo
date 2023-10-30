@@ -23,22 +23,33 @@ var (
 	defLoggerFilenamePrefix = "log"
 )
 
+var atomicLevel zap.AtomicLevel
+
 // Initialize logger handle
 // appName log file prefix
 func Initialize(appName string, conf conf.Log) {
-	core := zapcore.NewCore( // 输出到日志文件
+	SetLevel(conf.Level)
+	fileCore := zapcore.NewCore( // 输出到日志文件
 		setJSONEncoder(),
 		setLoggerWriter(appName, conf),
-		level2Int(conf.Level))
+		atomicLevel,
+	)
 
-	outputConsole := zapcore.NewCore( // 输出到控制台
+	consoleCore := zapcore.NewCore( // 输出到控制台
 		setConsoleEncoder(),
 		zapcore.Lock(os.Stdout),
-		level2Int(conf.Level),
+		atomicLevel,
 	)
-	core = zapcore.NewTee(core, outputConsole)
-	l := zap.New(core, zap.AddCaller(), zap.AddCallerSkip(1))
+	l := zap.New(zapcore.NewTee(fileCore, consoleCore), zap.AddCaller(), zap.AddCallerSkip(1))
 	zap.ReplaceGlobals(l)
+}
+
+// SetLevel 动态更新限制日志打印级别
+// zapcore.Levels ("debug", "info", "warn", "error", "dpanic", "panic", and "fatal").
+func SetLevel(level enum.LoggerLevel) {
+	if err := atomicLevel.UnmarshalText([]byte(level)); err != nil {
+		zap.S().Error(err)
+	}
 }
 
 func setConsoleEncoder() zapcore.Encoder {
@@ -59,17 +70,8 @@ func setEncoderConf() zapcore.EncoderConfig {
 	return ec
 }
 
-// 默认 info
-func level2Int(level enum.LoggerLevel) zapcore.Level {
-	var zapLevel zapcore.Level
-	if err := zapLevel.UnmarshalText([]byte(level)); err != nil {
-		zapLevel = zapcore.InfoLevel
-	}
-	return zapLevel
-}
-
 func setLoggerWriter(appName string, conf conf.Log) zapcore.WriteSyncer {
-	fName := makeFileName(conf.DirPath, appName)
+	fName := makeFilename(conf.DirPath, appName)
 	return zapcore.AddSync(
 		&lumberjack.Logger{
 			Filename:   fName,                 // 要写入的日志文件
@@ -82,7 +84,7 @@ func setLoggerWriter(appName string, conf conf.Log) zapcore.WriteSyncer {
 }
 
 // xxx/logs/xxx-service-2006-01-01-150405.log
-func makeFileName(path, name string) string {
+func makeFilename(path, name string) string {
 	if path = strings.TrimSpace(path); path == "" {
 		path = defLoggerPath
 	}
@@ -90,5 +92,5 @@ func makeFileName(path, name string) string {
 		name = defLoggerFilenamePrefix
 	}
 	nowTime := time.Now().Format("2006-01-02-150405")
-	return fmt.Sprintf("%s/%s-%s.log", path, name, nowTime)
+	return fmt.Sprintf("%s%s-%s.log", path+string(os.PathSeparator), name, nowTime)
 }
