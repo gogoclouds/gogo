@@ -1,20 +1,24 @@
 package logger_test
 
 import (
-	"testing"
-
-	"github.com/gogoclouds/gogo/internal/conf"
-	logging "github.com/gogoclouds/gogo/internal/log"
+	"github.com/gogoclouds/gogo/enum"
 	"github.com/gogoclouds/gogo/logger"
+	"runtime"
+	"testing"
 )
 
+var logConf logger.Config
+
 func init() {
-	logging.Initialize("gogo", conf.Log{
-		Level:       "debug", // debug | info | error
-		FileSizeMax: 10,      // 10 MB
-		FileAgeMax:  10,      // 10d
-		DirPath:     "logs",
-	})
+	logConf = logger.NewConfig(
+		logger.WithLevel(enum.LoggerLevel_Info),
+		logger.WithTimeFormat("2006-01-02 15:04:05.000"),
+		logger.WithFilename("server"),
+		logger.WithFileMaxSize(10),
+		logger.WithFileMaxAge(6*30),
+		logger.WithFileCompress(true),
+	)
+	logger.InitZapLogger(logConf)
 }
 
 func TestLogger(t *testing.T) {
@@ -22,6 +26,8 @@ func TestLogger(t *testing.T) {
 	logger.Info("The is ", "Info")
 	logger.Error("The is ", "Error")
 
+	go logConf.SetLevel(enum.LoggerLevel_Debug)
+	runtime.Gosched()
 	logger.Debugf("The is %s", "Debugf")
 	logger.Infof("The is %s", "Info")
 	logger.Errorf("The is %s", "Errorf")
