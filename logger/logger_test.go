@@ -19,31 +19,25 @@ func init() {
 		logger.WithFileCompress(true),
 	)
 	logger.InitZapLogger(logConf)
+
+	//logger.InitSlogLogger(logConf)
 }
 
 func TestLogger(t *testing.T) {
-	logger.Debug("The is ", "Debug")
-	logger.Info("The is ", "Info")
-	logger.Error("The is ", "Error")
+	logger.Debug("The is ", "Debug", "debug")
+	logger.Info("The is ", "Info", "info")
+	logger.Error("The is ", "Error", "error")
 
 	go logConf.SetLevel(enum.LoggerLevel_Debug)
 	runtime.Gosched()
 	logger.Debugf("The is %s", "Debugf")
-	logger.Infof("The is %s", "Info")
+	logger.Infof("The is %s", "Infof")
 	logger.Errorf("The is %s", "Errorf")
 
-	logger.Debugw("The is Debugw", "username", "lanjin.wei")
-	logger.Infow("The is Infow", "age", 28)
-	logger.Errorw("The is Errorw", "city", "shenzhen")
-
 	// output:
-	// 2023-06-12 21:32:35.931	DEBUG	logger/logger_test.go:21	The is Debug
-	// 2023-06-12 21:32:35.932	INFO	logger/logger_test.go:22	The is Info
-	// 2023-06-12 21:32:35.932	ERROR	logger/logger_test.go:23	The is Error
-	// 2023-06-12 21:32:35.932	DEBUG	logger/logger_test.go:25	The is Debugf
-	// 2023-06-12 21:32:35.932	INFO	logger/logger_test.go:26	The is Info
-	// 2023-06-12 21:32:35.932	ERROR	logger/logger_test.go:27	The is Errorf
-	// 2023-06-12 21:32:35.932	DEBUG	logger/logger_test.go:29	The is Debug	{"username": "lanjin.wei"}
-	// 2023-06-12 21:32:35.932	INFO	logger/logger_test.go:30	The is Info	{"age": 28}
-	// 2023-06-12 21:32:35.933	ERROR	logger/logger_test.go:31	The is Error	{"city": "shenzhen"}
+	// 2023-11-06 23:55:03.638	INFO	logger/logger_test.go:28	The is 	{"Info": "info"}
+	// 2023-11-06 23:55:03.638	ERROR	logger/logger_test.go:29	The is 	{"Error": "error"}
+	// 2023-11-06 23:55:03.638	DEBUG	logger/logger_test.go:33	The is Debugf
+	// 2023-11-06 23:55:03.638	INFO	logger/logger_test.go:34	The is Infof
+	// 2023-11-06 23:55:03.638	ERROR	logger/logger_test.go:35	The is Errorf
 }

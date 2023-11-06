@@ -12,20 +12,16 @@ type ZapLogger struct {
 	logger *zap.Logger
 }
 
-func (zl *ZapLogger) Panic(args ...any) {
-	zl.logger.Sugar().Panic(args...)
+func (zl *ZapLogger) Panic(msg string, keysAndValues ...any) {
+	zl.logger.Sugar().Panicw(msg, keysAndValues...)
 }
 
 func (zl *ZapLogger) Panicf(format string, args ...any) {
 	zl.logger.Sugar().Panicf(format, args...)
 }
 
-func (zl *ZapLogger) Panicw(msg string, keysAndValues ...any) {
+func (zl *ZapLogger) Panicc(ctx context.Context, msg string, keysAndValues ...any) {
 	zl.logger.Sugar().Panicw(msg, keysAndValues...)
-}
-
-func (zl *ZapLogger) Panicc(ctx context.Context, msg string) {
-	zl.logger.Sugar().Panic(msg)
 
 }
 
@@ -33,80 +29,52 @@ func (zl *ZapLogger) Paniccf(ctx context.Context, format string, args ...any) {
 	zl.logger.Sugar().Panicf(format, args...)
 }
 
-func (zl *ZapLogger) Paniccw(ctx context.Context, msg string, keysAndValues ...any) {
-	zl.logger.Sugar().Panicw(msg, keysAndValues...)
-}
-
-func (zl *ZapLogger) Error(args ...any) {
-	zl.logger.Sugar().Error(args)
+func (zl *ZapLogger) Error(msg string, keysAndValues ...any) {
+	zl.logger.Sugar().Errorw(msg, keysAndValues...)
 }
 
 func (zl *ZapLogger) Errorf(format string, args ...any) {
 	zl.logger.Sugar().Errorf(format, args...)
 }
 
-func (zl *ZapLogger) Errorw(msg string, keysAndValues ...any) {
+func (zl *ZapLogger) Errorc(ctx context.Context, msg string, keysAndValues ...any) {
 	zl.logger.Sugar().Errorw(msg, keysAndValues...)
-}
-
-func (zl *ZapLogger) Errorc(ctx context.Context, msg string) {
-	zl.logger.Sugar().Error(msg)
 }
 
 func (zl *ZapLogger) Errorcf(ctx context.Context, format string, args ...any) {
 	zl.logger.Sugar().Errorf(format, args...)
 }
 
-func (zl *ZapLogger) Errorcw(ctx context.Context, msg string, keysAndValues ...any) {
-	zl.logger.Sugar().Errorw(msg, keysAndValues...)
-}
-
-func (zl *ZapLogger) Info(args ...any) {
-	zl.logger.Sugar().Info(args)
+func (zl *ZapLogger) Info(msg string, keysAndValues ...any) {
+	zl.logger.Sugar().Infow(msg, keysAndValues...)
 }
 
 func (zl *ZapLogger) Infof(format string, args ...any) {
 	zl.logger.Sugar().Infof(format, args...)
 }
 
-func (zl *ZapLogger) Infow(msg string, keysAndValues ...any) {
+func (zl *ZapLogger) Infoc(ctx context.Context, msg string, keysAndValues ...any) {
 	zl.logger.Sugar().Infow(msg, keysAndValues...)
-}
-
-func (zl *ZapLogger) Infoc(ctx context.Context, msg string) {
-	zl.Info(msg)
 }
 
 func (zl *ZapLogger) Infocf(ctx context.Context, format string, args ...any) {
 	zl.Infof(format, args...)
 }
 
-func (zl *ZapLogger) Infocw(ctx context.Context, msg string, keysAndValues ...any) {
-	zl.Infow(msg, keysAndValues...)
-}
-
-func (zl *ZapLogger) Debug(args ...any) {
-	zl.logger.Sugar().Debug(args)
+func (zl *ZapLogger) Debug(msg string, keysAndValues ...any) {
+	zl.logger.Sugar().Debugw(msg, keysAndValues...)
 }
 
 func (zl *ZapLogger) Debugf(format string, args ...any) {
 	zl.logger.Sugar().Debugf(format, args...)
 }
 
-func (zl *ZapLogger) Debugw(msg string, keysAndValues ...any) {
+func (zl *ZapLogger) Debugc(ctx context.Context, msg string, keysAndValues ...any) {
 	zl.logger.Sugar().Debugw(msg, keysAndValues...)
-}
-
-func (zl *ZapLogger) Debugc(ctx context.Context, msg string) {
-	zl.logger.Sugar().Debug(msg)
 }
 
 func (zl *ZapLogger) Debugcf(ctx context.Context, format string, args ...any) {
 	zl.logger.Sugar().Debugf(format, args...)
-}
-
-func (zl *ZapLogger) Debugcw(ctx context.Context, msg string, keysAndValues ...any) {
-	zl.logger.Sugar().Debugw(msg, keysAndValues...)
 }
 
 // atomicLevel 动态更新限制日志打印级别
